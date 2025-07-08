@@ -6,7 +6,7 @@ const shopRoutes = require('./routes/shop')
 
 const path = require('path')
 const errorController = require('./controllers/error')
-const mongoConnect = require('./util/database').mongoConnect
+const mongoose = require('mongoose')
 const User = require('./models/user')
 
 const app = express();
@@ -19,9 +19,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use((req, res, next) => {
-    User.findById('6867523109ed3ca170a7268d')
+    User.findById('686b7229cb2d9022eb819fc3')
         .then(user => {
-            req.user = new User(user.name, user.email, user.cart, user._id)
+            req.user = user
             next()
         })
         .catch(err => {
@@ -34,6 +34,28 @@ app.use(shopRoutes)
 
 app.use(errorController.get404)
 
-mongoConnect(() => {
-    app.listen(3000)
-})
+mongoose
+    .connect('mongodb+srv://phubierd:XrrhZeFASamyuSEr@cluster0.9gg8thh.mongodb.net/shop?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => {
+        User.findOne()
+            .then(user => {
+                if (!user) {
+                    const user = new User({
+                        name: 'PhuCT',
+                        email: 'phuct@gmail.com',
+                        cart: {
+                            items: []
+                        }
+                    })
+                    user.save()
+                }
+            })
+            .catch(err => {
+                console.log(err, 'error find one user ???')
+            })
+
+        app.listen(3000)
+    })
+    .catch(err => {
+        console.log(err, 'error connect mongoose')
+    })

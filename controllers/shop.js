@@ -1,15 +1,17 @@
 const Product = require('../models/product')
 // const Cart = require('../models/cart')
-// const Order = require('../models/order')
+const Order = require('../models/order')
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll().then(products => {
-        res.render('shop/product-list', {
-            prods: products,
-            pageTitle: 'All Products',
-            path: '/products',
-        })
-    }).catch(err => console.log(err, 'error find all getProducts ??'))
+    Product.find()
+        .then(products => {
+            console.log(products, 'productssssssssssssss')
+            res.render('shop/product-list', {
+                prods: products,
+                pageTitle: 'All Products',
+                path: '/products',
+            })
+        }).catch(err => console.log(err, 'error find all getProducts ??'))
 }
 
 exports.getProductDetail = (req, res, next) => {
@@ -26,19 +28,22 @@ exports.getProductDetail = (req, res, next) => {
 }
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll().then(products => {
-        // console.log(products, 'products ??????')
-        res.render('shop/index', {
-            prods: products,
-            pageTitle: 'Shop',
-            path: '/',
-        })
-    }).catch(err => console.log(err, 'error find all get index ??'))
+    Product.find()
+        .then(products => {
+            // console.log(products, 'products ??????')
+            res.render('shop/index', {
+                prods: products,
+                pageTitle: 'Shop',
+                path: '/',
+            })
+        }).catch(err => console.log(err, 'error find all get index ??'))
 }
 
 exports.getCart = (req, res, next) => {
-    req.user.getCart()
-        .then(products => {
+    req.user
+        .populate('cart.items.productId')
+        .then(user => {
+            let products = user.cart.items
             res.render('shop/cart', {
                 pageTitle: 'Your Cart',
                 path: '/cart',
@@ -54,7 +59,8 @@ exports.getCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId
-    req.user.deleteItemFromCart(prodId)
+    req.user
+        .removeFromCart(prodId)
         .then(result => {
             res.redirect('/cart')
         })
@@ -75,12 +81,12 @@ exports.postCart = (req, res, next) => {
             res.redirect('/cart')
         })
         .catch(err => {
-            console.log(err, 'error find product by id ??')
+            console.log(err, 'error add to cart ??')
         })
 }
 
 exports.getOrders = (req, res, next) => {
-    req.user.getOrder()
+    Order.find({ "user.userId": req.user._id })
         .then(orders => {
             res.render('shop/orders', {
                 pageTitle: 'Your Orders',
@@ -88,7 +94,9 @@ exports.getOrders = (req, res, next) => {
                 orders
             })
         })
-        .catch(err => console.log(err, 'get error orders'))
+        .catch(err => {
+            console.log(err, "err find all orders ???")
+        })
 }
 
 exports.getCheckout = (req, res, next) => {
@@ -99,11 +107,31 @@ exports.getCheckout = (req, res, next) => {
 }
 
 exports.postOrder = (req, res, next) => {
-    req.user.addOrder()
-        .then(result =>
+    req.user.populate('cart.items.productId')
+        .then(user => {
+            const products = user.cart.items.map(item => (
+                {
+                    quantity: item.quantity,
+                    product: { ...item.productId._doc }
+                }
+            ))
+            const order = new Order({
+                user: {
+                    name: req.user.name,
+                    userId: req.user
+                },
+                products
+            })
+            return order.save()
+        })
+        .then(result => {
+            return req.user.clearCart()
+        }
+        ).then(result => {
             res.redirect('/orders')
-        )
-        .catch(err => {
-            console.log(err, 'error post order get cart')
+
+        })
+        .catch(error => {
+            console.log(error, 'error get product by user populate')
         })
 }
