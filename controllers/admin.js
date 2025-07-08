@@ -5,11 +5,11 @@ exports.getAdminProducts = (req, res, next) => {
         // .select('title price -_id')
         // .populate('userId', 'name')
         .then(products => {
-            console.log(products, 'ppppp')
             res.render('admin/products', {
                 prods: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
+                   isAuthenticated: req.session.isLoggedIn
             })
         }).catch(err => console.log(err, 'err fetch all from db'))
 }
@@ -32,7 +32,8 @@ exports.getAddProduct = (req, res, next) => {
     res.render('admin/edit-product', {
         pageTitle: 'Add product',
         path: '/admin/add-product',
-        editing: false
+        editing: false,
+           isAuthenticated: req.session.isLoggedIn
     })
 }
 exports.getEditProduct = (req, res, next) => {
@@ -51,7 +52,8 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Add product',
                 path: '/admin/edit-product',
                 editing: editMod,
-                product
+                product,
+                   isAuthenticated: req.session.isLoggedIn
             })
         }).catch(err => {
             console.log(err, 'error find by id getEditProduct ??')

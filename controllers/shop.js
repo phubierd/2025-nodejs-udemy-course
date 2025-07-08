@@ -10,6 +10,7 @@ exports.getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle: 'All Products',
                 path: '/products',
+                isAuthenticated: req.session.isLoggedIn
             })
         }).catch(err => console.log(err, 'error find all getProducts ??'))
 }
@@ -21,6 +22,7 @@ exports.getProductDetail = (req, res, next) => {
             product: product,
             pageTitle: product.title,
             path: `/products`,
+            isAuthenticated: req.session.isLoggedIn
         })
     }).catch(err => {
         console.log(err, 'err find by id DB')
@@ -35,6 +37,7 @@ exports.getIndex = (req, res, next) => {
                 prods: products,
                 pageTitle: 'Shop',
                 path: '/',
+                isAuthenticated: req.session.isLoggedIn
             })
         }).catch(err => console.log(err, 'error find all get index ??'))
 }
@@ -47,7 +50,8 @@ exports.getCart = (req, res, next) => {
             res.render('shop/cart', {
                 pageTitle: 'Your Cart',
                 path: '/cart',
-                products
+                products,
+                isAuthenticated: req.session.isLoggedIn
             })
 
         })
@@ -91,7 +95,8 @@ exports.getOrders = (req, res, next) => {
             res.render('shop/orders', {
                 pageTitle: 'Your Orders',
                 path: '/orders',
-                orders
+                orders,
+                isAuthenticated: req.session.isLoggedIn
             })
         })
         .catch(err => {
