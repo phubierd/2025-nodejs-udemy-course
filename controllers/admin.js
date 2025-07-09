@@ -1,7 +1,7 @@
 const Product = require('../models/product')
 
 exports.getAdminProducts = (req, res, next) => {
-    Product.find()
+    Product.find({ userId: req.user._id })
         // .select('title price -_id')
         // .populate('userId', 'name')
         .then(products => {
@@ -63,16 +63,19 @@ exports.postEditProduct = (req, res, next) => {
     // const product = new Product(title, price, imageUrl, description, productId)
     Product.findById(productId)
         .then(product => {
+            if (product.userId.toString() !== req.user._id.toString()) {
+                return res.redirect('/')
+            }
             product.title = title
             product.price = price
             product.imageUrl = imageUrl
             product.description = description
-            return product.save()
+            return product.save().then(result => {
+                console.log('UPDATED PRODUCT !!!')
+                res.redirect('/admin/products')
+            })
         })
-        .then(result => {
-            console.log('UPDATED PRODUCT !!!')
-            res.redirect('/admin/products')
-        })
+
         .catch(err => {
             console.log(err, 'error find by id postEditProduct ??')
         })
@@ -80,7 +83,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findByIdAndDelete(prodId)
+    // Product.findByIdAndDelete(prodId)
+    Product.deleteOne({ _id: prodId, userId: req.user._id })
         .then(result => {
             console.log('PRODUCT DESTROY !!!!')
             res.redirect('/admin/products')
