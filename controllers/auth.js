@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs')
 
 // const transporter = nodemailer.createTransport(sendgridTransport({
 //     auth: {
-//         api_key: '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',
+//         api_key: '',
 //     }
 // }))
 
