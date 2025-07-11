@@ -11,7 +11,12 @@ exports.getAdminProducts = (req, res, next) => {
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
             })
-        }).catch(err => console.log(err, 'err fetch all from db'))
+        }).catch(err => {
+            console.log(err, 'err fetch all from db')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.postAddProduct = (req, res, next) => {
@@ -22,7 +27,7 @@ exports.postAddProduct = (req, res, next) => {
     if (!errors.isEmpty()) {
         return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add product',
-            path: '/admin/edit-product',
+            path: '/admin/add-product',
             editing: false,
             product,
             hasError: true,
@@ -35,7 +40,22 @@ exports.postAddProduct = (req, res, next) => {
             console.log(result, 'created product !!!')
             res.redirect('/admin/products')
         })
-        .catch(err => console.log(err, 'post add product'))
+        .catch(err => {
+            console.log(err, 'post add product')
+            // return res.status(500).render('admin/edit-product', {
+            //     pageTitle: 'Add product',
+            //     path: '/admin/add-product',
+            //     editing: false,
+            //     product,
+            //     hasError: true,
+            //     errorMessage: 'Database operation failed please try again.',
+            //     validationErrors: []
+            // })
+            // res.redirect('/500')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 
 }
 
@@ -74,6 +94,9 @@ exports.getEditProduct = (req, res, next) => {
             })
         }).catch(err => {
             console.log(err, 'error find by id getEditProduct ??')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 
 }
@@ -113,6 +136,9 @@ exports.postEditProduct = (req, res, next) => {
 
         .catch(err => {
             console.log(err, 'error find by id postEditProduct ??')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -126,5 +152,8 @@ exports.postDeleteProduct = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, 'error post delete product ???')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }

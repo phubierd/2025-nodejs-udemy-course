@@ -11,7 +11,12 @@ exports.getProducts = (req, res, next) => {
                 pageTitle: 'All Products',
                 path: '/products',
             })
-        }).catch(err => console.log(err, 'error find all getProducts ??'))
+        }).catch(err => {
+            console.log(err, 'error find all getProducts ??')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getProductDetail = (req, res, next) => {
@@ -24,6 +29,9 @@ exports.getProductDetail = (req, res, next) => {
         })
     }).catch(err => {
         console.log(err, 'err find by id DB')
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
     })
 }
 
@@ -36,7 +44,12 @@ exports.getIndex = (req, res, next) => {
                 pageTitle: 'Shop',
                 path: '/',
             })
-        }).catch(err => console.log(err, 'error find all get index ??'))
+        }).catch(err => {
+            console.log(err, 'error find all get index ??')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 }
 
 exports.getCart = (req, res, next) => {
@@ -53,7 +66,9 @@ exports.getCart = (req, res, next) => {
         })
 
         .catch(err => {
-            err, 'error get cart ???'
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -66,6 +81,9 @@ exports.postCartDeleteProduct = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, 'error get cart delete product ???')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -82,6 +100,9 @@ exports.postCart = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, 'error add to cart ??')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -96,6 +117,9 @@ exports.getOrders = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, "err find all orders ???")
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -131,7 +155,10 @@ exports.postOrder = (req, res, next) => {
             res.redirect('/orders')
 
         })
-        .catch(error => {
-            console.log(error, 'error get product by user populate')
+        .catch(err => {
+            console.log(err, 'error get product by user populate')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }

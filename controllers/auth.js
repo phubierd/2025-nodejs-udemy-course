@@ -104,11 +104,17 @@ exports.postLogin = (req, res, next) => {
                 })
                 .catch(err => {
                     console.log(err, 'error compare password')
+                    const error = new Error(err)
+                    error.httpStatusCode = 500
+                    return next(error)
                 })
 
         })
         .catch(err => {
             console.log(err, 'err login ???')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -150,7 +156,12 @@ exports.postSignup = (req, res, next) => {
             //     html: '<h1>You successfully signed up!</h1>'
             // })
         })
-        .catch(err => console.log(err, 'error send mail'))
+        .catch(err => {
+            console.log(err, 'error send mail')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
+        })
 };
 
 exports.postLogout = (req, res, next) => {
@@ -205,6 +216,9 @@ exports.postReset = (req, res, next) => {
             })
             .catch(err => {
                 console.log(err, 'error find user ???')
+                const error = new Error(err)
+                error.httpStatusCode = 500
+                return next(error)
             })
     })
 }
@@ -231,6 +245,9 @@ exports.getNewPassword = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, 'error find user by token')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
 
@@ -260,5 +277,8 @@ exports.postNewPassword = (req, res, next) => {
         })
         .catch(err => {
             console.log(err, 'error reset password')
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
         })
 }
