@@ -26,6 +26,7 @@ router.post('/add-product', [
 ], isAuth, adminController.postAddProduct)
 
 router.get('/edit-product/:productId', isAuth, adminController.getEditProduct)
+
 router.post('/edit-product', [
     body('title')
         .isString()
@@ -39,5 +40,6 @@ router.post('/edit-product', [
         .isLength({ min: 5, max: 500 })
         .trim(),
 ], isAuth, adminController.postEditProduct)
-router.post('/delete-product', isAuth, adminController.postDeleteProduct)
+
+router.delete('/product/:productId', isAuth, adminController.deleteProduct)
 module.exports = router
