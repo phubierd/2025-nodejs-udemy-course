@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
 const authRoutes = require('./routes/auth')
+const multer = require('multer')
 
 const path = require('path')
 const errorController = require('./controllers/error')
@@ -26,12 +27,30 @@ const csrfProtection = csrf({
 
 })
 
+const fileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'images')
+    },
+    filename: (req, file, cb) => {
+        // cb(null, `${new Date().toISOString()}-${file.originalname}`)
+        cb(null, `${file.filename}-${file.originalname}`)
+    }
+})
+
+const fileFilter = (req, file, cb) => {
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg')
+        return cb(null, true)
+    return cb(null, false)
+}
+
 // EJS
 app.set('view engine', 'ejs')
 app.set('views', 'views')
 
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(multer({ storage: fileStorage, fileFilter }).single('image')) //name image at input
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use(session({
     secret: 'my secret',
     resave: false,
